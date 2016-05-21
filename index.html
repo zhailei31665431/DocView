@@ -1,0 +1,1526 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>DocView测试</title>
+	<link rel="stylesheet" type="text/css" href="/bower_components/At.js/dist/css/jquery.atwho.css">
+	<link rel="stylesheet" type="text/css" href="/bower_components/font-awesome/css/font-awesome.css">
+	<script type="text/javascript" src="/bower_components/jquery/dist/jquery.js"></script>
+	<script type="text/javascript" src="/bower_components/underscore/underscore-min.js"></script>
+	<script type="text/javascript" src="/bower_components/moment/moment.js"></script>
+	<script type="text/javascript" src="/bower_components/screenfull/dist/screenfull.js"></script>
+	<script type="text/javascript" src="/bower_components/backbone/backbone.js"></script>
+	<script type="text/javascript" src="/bower_components/backbone.marionette/lib/backbone.marionette.js"></script>
+	<script type="text/javascript" src="/bower_components/caret/jquery.caret.js"></script>
+	<script type="text/javascript" src="/bower_components/At.js/dist/js/jquery.atwho.js"></script>
+	<script type="text/javascript" src="/bower_components/autosize/dist/autosize.js"></script>
+	<style type="text/css">
+		.showView{min-height: 40px;min-width: 100px;background: #32a62e;color: #fff;cursor: pointer;border:none;outline: none;}
+      .showView:active{background: #4174d9}
+      .spinner {position:absolute;top:50%;left:50%;margin:-50px 0 0 -50px;width: 100px;height: 100px;}
+      .container1 > div, .container2 > div, .container3 > div {width: 33px;height: 33px;background: #32a62e;border-radius: 100%;position: absolute;-webkit-animation: bouncedelay 1.2s infinite ease-in-out;animation: bouncedelay 1.2s infinite ease-in-out;-webkit-animation-fill-mode: both;animation-fill-mode: both;}
+      .spinner .spinner-container {position: absolute;width: 100%;height: 100%;}
+      .container2 {-webkit-transform: rotateZ(45deg);transform: rotateZ(45deg);}
+      .container3 {-webkit-transform: rotateZ(90deg);transform: rotateZ(90deg);}
+      .circle1 { top: 0; left: 0; }
+      .circle2 { top: 0; right: 0; }
+      .circle3 { right: 0; bottom: 0; }
+      .circle4 { left: 0; bottom: 0; }
+      .container2 .circle1 {-webkit-animation-delay: -1.1s;animation-delay: -1.1s;}
+      .container3 .circle1 {-webkit-animation-delay: -1.0s;animation-delay: -1.0s;}
+      .container1 .circle2 {-webkit-animation-delay: -0.9s;animation-delay: -0.9s;}
+      .container2 .circle2 {-webkit-animation-delay: -0.8s;animation-delay: -0.8s;}
+      .container3 .circle2 {-webkit-animation-delay: -0.7s;animation-delay: -0.7s;}
+      .container1 .circle3 {-webkit-animation-delay: -0.6s;animation-delay: -0.6s;}
+      .container2 .circle3 {-webkit-animation-delay: -0.5s;animation-delay: -0.5s;}
+      .container3 .circle3 {-webkit-animation-delay: -0.4s;animation-delay: -0.4s;}
+      .container1 .circle4 {-webkit-animation-delay: -0.3s;animation-delay: -0.3s;}
+      .container2 .circle4 {-webkit-animation-delay: -0.2s;animation-delay: -0.2s;}
+      .container3 .circle4 {-webkit-animation-delay: -0.1s;animation-delay: -0.1s;}
+      @-webkit-keyframes bouncedelay {
+        0%, 80%, 100% { -webkit-transform: scale(0.0) }
+        40% { -webkit-transform: scale(1.0) }
+      }
+      @keyframes bouncedelay {
+        0%, 80%, 100% {
+          transform: scale(0.0);
+          -webkit-transform: scale(0.0);
+        } 40% {
+          transform: scale(1.0);
+          -webkit-transform: scale(1.0);
+        }
+      }
+      .doc-view{position: fixed;top:0;right: 0;bottom: -1px;left: 0;background: #171717;z-index: 100000}
+      .doc-view .doc-view-w{}
+      .doc-view .doc-view-w .doc-view-c{position: absolute;top:0;right: 0;bottom: 0;left: 0;z-index: 2}
+      .doc-view-c .doc-view-l{position: absolute;top: 0;right:360px;left: 0;bottom: 0;}
+      .doc-view-l .doc-view-opear{position: absolute;top:20px;left: 20px;right:20px;height: 45px;}
+      .doc-view-l .doc-view-opear .doc-view-opear-c{}
+      .doc-view-opear-c .doc-view-opear-img{float: left;}
+      .doc-view-opear-c .doc-view-opear-doc{float: right;}
+      .doc-view-opear-c .doc-view-opear-same{float: right;margin-left: 10px;}
+      .doc-view-opear-c .doc-view-opear-item{float: left;margin:0 0 0 10px;width: 31px;height: 31px;border-radius: 31px;background: #fff;cursor: pointer;color: #494949}
+      .doc-view-opear-c .doc-view-opear-item:first-child{margin:0;}
+      .doc-view-opear-c .doc-view-opear-item i{display: table-cell;width: 31px;height: 31px;vertical-align: middle;text-align: center;color: #494949}
+      .doc-view-l .doc-view-itemView{position: absolute;top:70px;right:20px;bottom:50px;left: 20px;background: #212121;}
+      .doc-view-l .doc-view-itemView .doc-view-item-w{position: absolute;top:0;right: 0;left: 0;bottom: 0;overflow: hidden;background: #212121}
+      .doc-view-l .doc-view-itemView .doc-view-item{}
+      .doc-view-l .doc-view-itemView .doc-view-item-c{position: absolute;background: #212121;transition:0.3s;}
+      .doc-view-l .doc-view-itemView .doc-view-item-c.other{position:relative;display:table-cell;vertical-align: middle;text-align: center;}
+      .doc-view-l .doc-view-itemView .doc-view-item-c .doc-ico{position: absolute;font-size: 100px;color: #fff;left: 50%;top: 50%;margin: -50px;}
+      .doc-view-l .doc-view-itemView .doc-view-item-c.zoom{position: absolute;display: block;text-align: left;}
+      .doc-view-l .doc-view-itemView .doc-view-item-c img{max-width: 100%;max-height: 100%;}
+      .doc-view-l .doc-view-itemView .doc-view-item-c img.zoom{max-height: none;max-width: none;position:absolute;}
+      .doc-view-l .doc-view-itemView .doc-view-item-c iframe{width:100%;height:100%;}
+      .doc-view-l .doc-view-itemView .doc-view-item-c iframe.docFull{position:absolute;left:0;right:0;bottom:0;}
+      .doc-view-l .doc-view-itemView .doc-view-item-w .doc-view-zoom-w{position: absolute;bottom: 0;right: 0;width: 112px;height: 112px;background: #000;border:1px solid #5b5b5b;overflow: hidden;-webkit-user-select: none;z-index: 15}
+      .doc-view-l .doc-view-itemView .doc-view-item-w .doc-view-zoom-c{position: absolute;}
+      .doc-view-l .doc-view-itemView .doc-view-item-w .doc-view-zoom-c img{width: 100%;height: 100%;position: absolute;}
+      .doc-view-l .doc-view-itemView .doc-view-item-w .doc-view-zoom-c .doc-view-zoom{position: absolute;top:0;left:0;width: 64px;height: 64px;/*border:3px solid #FCFF3C;*/cursor: pointer;background: #fff;opacity: 0.8}
+      .doc-view-l .doc-view-moreView{}
+      .doc-view-l .doc-view-moreView .doc-view-moreView-w{}
+      .doc-view-moreView-w .doc-view-moreView-bg{position:fixed;top:0;right:0;left:0;bottom:0;background: #000;opacity:0.8;z-index: 9}
+      .doc-view-l .doc-view-moreView .doc-view-moreView-c{position: absolute;bottom: 0;left: 0px;right: 0px;height: 50px;color: #696969;font-size: 13px;z-index: 10}
+      .doc-view-moreView-c .doc-view-moreView-main{position: fixed;left: 0;right:360px;bottom: 50px;background: #000;height: 250px;z-index: 2;overflow: hidden;}
+      .doc-view-moreView-c .doc-view-moreView-main .doc-view-moreView-main-c{position:absolute;z-index: 2}
+      .doc-view-moreView-c .doc-view-moreView-main .doc-view-moreView-title{position: absolute;top:0;left: 0;right: 0;height: 44px;background: #303030;font-size: 14px;color: #fff;}
+      .doc-view-moreView-c .doc-view-moreView-main .doc-view-moreView-title .doc-view-moreView-title-val{float: left;margin-left: 20px;line-height: 44px;}
+      .doc-view-moreView-c .doc-view-moreView-main .doc-view-moreView-title .doc-view-moreView-title-close{float: right;margin:8px 20px 0 0;font-size: 20px;cursor: pointer;}
+      .doc-view-moreView-c .doc-view-moreView-main .doc-view-moreView-content{position: absolute;top: 44px;bottom: 0;left: 30px;right: 30px;overflow-y:auto;}
+      .doc-view-moreView-content .doc-view-item{position: relative;float: left;width:100px;height:100px;margin:20px;;overflow: hidden;cursor: pointer;}
+      .doc-view-moreView-content .doc-view-item.active{border:5px solid #32a62e;margin:15px;cursor: default}
+      .doc-view-moreView-content .doc-view-item img{position: absolute;}
+      .doc-view-moreView-c .doc-view-moreView-info{float: left;margin-left: 20px;}
+      .doc-view-moreView-info .doc-view-moreView-btnc{float: left;margin:10px 10px 0 0;height:28px;padding:0 15px;border:1px solid #141414;cursor: pointer;-webkit-user-select:none;}
+      .doc-view-moreView-info .doc-view-moreView-btnc:hover{color: #fff;}
+      .doc-view-moreView-info .doc-view-moreView-btnc .doc-view-moreView-btn{float: left;line-height: 28px;}
+      .doc-view-moreView-info .doc-view-moreView-btnc i{float: left;margin:6px 0 0 5px;}
+      .doc-view-moreView-info .doc-view-moreView-info-val{float: left;line-height: 50px;}
+      .doc-view-moreView-info .doc-view-moreView-info-val span{margin-left: 10px;}
+      .doc-view-moreView-info .doc-view-moreView-info-val span:first-child{margin-left: 0;}
+      .doc-view-moreView-w .doc-view-moreView-opear{top:70px;left: 20px;right: 380px;bottom: 50px;z-index: 10}
+      .doc-view-moreView-w .doc-view-moreView-opear .doc-view-moreView-pre{position: absolute;top:50%;left: 0;font-size: 41px;color: #e7e7e7;margin-top: -29px;cursor: pointer;}
+      .doc-view-moreView-w .doc-view-moreView-opear .doc-view-moreView-next{position: absolute;top:50%;right: 0px;font-size: 41px;color: #e7e7e7;margin-top: -29px;cursor: pointer;}
+      .doc-view-moreView-w .doc-view-moreView-opear i{opacity: 0.5}
+      .doc-view-moreView-w .doc-view-moreView-opear i:hover{opacity: 1}
+      .doc-view-c .doc-view-r{position: absolute;top: 0;right: 0;bottom: 0;width: 360px;background: #f4f4f4}
+      .doc-view-r .doc-view-info{}
+      .doc-view-info .doc-view-info-w{}
+      .doc-view-info .doc-view-info-w .doc-view-info-c{padding-top:25px;overflow: hidden;background: #fff;}
+      .doc-view-info-c .doc-view-name{margin:0 20px;line-height: 36px;font-weight: normal;color: #494949;font-size: 18px;}
+      .doc-view-info-c .doc-view-user{margin:5px 20px 15px;overflow: hidden;}
+      .doc-view-user .doc-view-user-avatar{float: left;width: 50px;height: 50px;}
+      .doc-view-user .doc-view-user-avatar img{max-width: 50px;max-height: 50px;}
+      .doc-view-user .doc-view-user-info{margin:0 0 0 60px;font-size: 13px;color: #969696}
+      .doc-view-user .doc-view-user-info .doc-view-user-title{line-height: 24px;margin-right: 12px;overflow: hidden;height: 24px;}
+      .doc-view-user .doc-view-user-info .doc-view-user-date{}
+      .doc-view-user .doc-view-user-info .doc-view-user-date span{margin-left: 10px;}
+      .doc-view-info-c .doc-view-detail{background: #f4f4f4;cursor: pointer;}
+      .doc-view-info-c .doc-view-detai-title{height: 36px;margin:0 20px;position:relative}
+      .doc-view-info-c .doc-view-info-main{  position: absolute;top: 126px;bottom: 0px;overflow-y: auto;left: 0;right: 0;overflow-x: hidden;padding-bottom:20px;}
+      .doc-view-detai-title span{float: left;line-height: 36px;}
+      .doc-view-detai-title .circle{position:absolute;top:10px;}
+      .doc-view-detai-title .val{margin-left: 20px;}
+      .doc-view-detai-title .showInfoTypeBtn{float: right;display: none;position:absolute;top:10px;right:0;}
+      .doc-view-detail.up .up{display:block;}
+      .doc-view-detail.down .down{display: block;}
+      .doc-view-detail .doc-view-detail-w{display: none;height: auto;max-height: 400px;overflow-y:auto}
+      .doc-view-detail .doc-view-detail-w .doc-view-detail-c{padding-top: 15px;border-top: 1px solid #fff;}
+      .doc-view-detail-c .doc-view-detail-item{overflow: hidden;padding:0 20px;}
+      .doc-view-detail-item label{float: left;width: 92px;color: #969696;text-align: right;}
+      .doc-view-detail-item span{display: block;margin-left: 100px;color: #494949;}
+      .doc-view-r .doc-view-comment{margin:15px 5px 0;}
+      .doc-view-r .doc-view-comment .comment-list{margin:15px 0 0;}
+      .doc-view .doc-view-w .doc-loading{position: absolute;top:0;right: 0;bottom: 0;left: 0;background: #fff;z-index: 3}
+      .doc-view .doc-view-w .doc-loading .doc-loading-val{position: absolute;top: 25%;right: 0;left: 0;text-align: center;font-size: 20px;color:#b0b0b0}
+      .doc-view-w .doc-view-close{position: absolute;top:5px;right:10px;font-size: 15px;color: #494949;z-index: 2;cursor: pointer;}
+
+
+
+      .comment-textarea{margin:0 -10px;width: 100%;height: 100px;padding:6px 10px;line-height: 15px;font-size:14px;resize:none;transition: height 0.2s;}
+      .comment .hide{display: none;}
+      .post-default-view{cursor:pointer}
+      .post-default-view-c{width: 100%;height: 30px;border:1px solid #b0b0b0;border-radius: 3px;line-height: 30px;color: #666;font-size: 14px;}
+      .post-default-view-c .post-default-view-val{padding:0 15px;}
+      .comment button,.comment input,.comment textarea{outline:none}
+      .comment-post{margin:0 10px;}
+      .comment-post-form{}
+      .comment-post-form .comment-post-form-w{position:relative}
+      .comment-post-form .comment-post-form-w .comment-post-form-c{margin:0 10px;}
+      .comment-post-form-w .comment-post-form-tip{margin-top:15px;font-size: 12px;color: #b0b0b0}
+      .comment-post-opear{position: relative;margin-top:5px;}
+      .comment-post-opear .comment-post-input{display:block;margin:0 100px 0 -15px}
+      .comment-post-opear .comment-post-form-name{margin:0 15px}
+      .comment-post-opear .comment-post-form-email{margin:5px 15px 0}
+      .comment-post-form .comment-post-form-w .comment-input{width:100%;height: 36px;padding:0 15px;font-size: 14px;}
+      .comment-input::-webkit-input-placeholder{color: #b0b0b0;font-size: 14px;line-height: 1}
+      .comment-input::-moz-placeholder{color: #b0b0b0;font-size: 14px;line-height: 1}
+      .comment-input:-ms-input-placeholder{color: #b0b0b0!important;font-size: 14px;line-height: 1}
+      .comment-post-form .comment-post-form-w .comment-post-form-btns{margin-top:10px;overflow: hidden;}
+      .comment-post-form-btns button{float:right;background: none;border:none;min-width: 70px;padding: 0 10px;text-align: center;font-size: 14px;height: 36px;line-height: 1;border:1px solid #ccc;border-radius: 3px;cursor: pointer;outline: none;margin-right:15px;}
+      .comment-post-form-btns button:first-child{margin-right:0;margin-top: 0;}
+      .comment-post-form-btns button[disabled]{opacity: 0.5;cursor: default;}
+      .comment-post-form-btns .comment-post-form-btn.save{background: #00c8df;border-color: #00b1c6;color: #fff}
+      .comment-post-form-btns .comment-post-form-btn.cancel{background: #fff}
+      .comment-post-form-btns .comment-post-form-btn.cancel:hover{background: #f7f7f7}
+      .comment-list{margin:10px 0 0;}
+      .comment-list .loading-view{text-align: left;font-size: 14px;color: #b0b0b0}
+      .loading-view .loading-view-c{}
+      .comment-list .comment-list-w{text-align: center;}
+      .comment-list .comment-list-c{text-align: left;}
+      .comment-list .comment-list-c .comment-list-none{tex-align:center;margin:0 15px;}
+      .comment-list-c .comment-list-item{margin:0 15px;}
+      .comment-list-c .comment-list-item:first-child{border-top: none;margin-top: 0;}
+      .comment-list-item .comment-list-item-c{overflow: hidden;margin-top: 15px;}
+      .comment-list-item:first-child .comment-list-item-c{margin-top:0;}
+      .comment-list-item .comment-list-item-c .comment-list-item-avatar{float: left;width: 40px;height: 40px;border-radius:40px;overflow:hidden;}
+      .comment-list-item .comment-list-item-c .comment-list-item-avatar img{width: 40px;height: 40px;}
+      .comment-list-item .comment-list-item-c .comment-list-item-info{display: block;margin:0 0 0 50px;font-size: 14px;overflow:hidden;}
+      .comment-list-item .comment-list-item-c .comment-list-item-name{margin-bottom:5px;}
+      .comment-list-item .comment-list-item-c .comment-list-item-content{}
+      .comment-list-item-content a{text-decoration: none;color: #4174d9}
+      .comment-list-item .comment-list-item-date{font-size:13px;color:#ccc;}
+      .comment-list-w .comment-list-more{margin:30px auto 0;width: 70px;height: 36px;border:none;background: #00c8df;font-size: 14px;color: #fff;border:1px solid #00b1c6;border-radius: 3px;cursor: pointer;}
+      .comment-list-w .comment-list-more[disabled]{opacity: 0.5;cursor: default;}
+	</style>
+</head>
+<body>
+	xxxxxx
+</body>
+
+<script type="text/javascript">
+	$(function(){
+		function init(data){
+	    if(!JWidgets){
+	  	   var JWidgets = new Marionette.Application();
+	    }
+	    $.support.Ie8_9 = (function(){
+	      var userAgent = navigator.userAgent.toLowerCase()
+	      return userAgent.indexOf('msie 8.0')>-1 || userAgent.indexOf('msie 9.0')>-1
+	    })();
+	    var apptypeName = {
+	    	spms_project:'项目',
+	      osns_app_vote:'投票',
+	      osns_app_groups:'群组',
+	      osns_app_as:'信息流',
+	      osns_app_project:'项目',
+	      osns_app_files:'文件',
+	      osns_spms_project:'项目',
+	      osns_app_weituan:'微团购',
+	      osns_app_spms:'项目',
+	      microcampaigns:'微发布',
+	      osns_microcampaigns:'微发布',
+	      osns_app_task:'任务',
+	      spms_task:'任务',
+	      pms_nonachievement:'项目文档',
+	      pms_achievement:'成果文档',
+	      pms_task:'任务文档', // 保留 兼容老数据，保证已上传的文档来源正常展示
+	      pms_as:'信息流', // 保留 兼容老数据，保证已上传的文档来源正常展示
+	      osns_task:'任务文档', // 由 pms_task 变更为 osns_task, 实际来源为spms的任务
+	      osns_as:'信息流' // 由 pms_as 变更为 osns_as,实际来源为spms的信息流
+	    }
+	    var fileICONs = {
+	      pdf:'pdf',
+	      zip:'archive', rar:'archive',
+	      xls:'excel', xlsx:'excel', doc:'word', docx:'word',txt:'word',
+	      jpg:'image', jpep:'image', png:'image', bmp:'image',
+	      ppt:'powerpoint', pptx:'powerpoint',mp4:"video",wmv:'video'
+	    };
+
+	    JWidgets.module('report',function(report,JWidgets,Backbone,Marionette,$,_){
+	      this.startWithParent = false;
+	        //template
+	        var template = {};
+	        report.template = template;
+
+	        template.layoutTemplate = _.template('<div class="comment-c">\
+	                                                <div class="comment-post"></div>\
+	                                                <div class="comment-list"></div>\
+	                                              </div>')
+
+	        template.postLayoutTemplate = _.template('<div class="comment-post-c"></div>')
+	        template.postDefaultTemplate = _.template('<div class="post-default-view-c">\
+	                                                      <span class="post-default-view-val">评论</span>\
+	                                                    </div>')
+	        template.formLayout = _.template('<div class="comment-post-form-w">\
+	                                            <div class="comment-post-form-c"></div>\
+	                                            <div class="comment-post-opear">\
+	                                              <div class="comment-post-form-btns">\
+	                                                <button class="comment-post-form-btn cancel" type="button">取消</button>\
+	                                                <button class="comment-post-form-btn save" disabled="disabled" type="button">评论</button>\
+	                                              </div>\
+	                                            </div>\
+	                                          </div>')
+
+	        template.loadViewTemplate = _.template('<div class="loading-view-c">加载中…</div>')
+	        template.listsTemplate = _.template('<div class="comment-list-c"></div>\
+	                                              <%=initMoreBtn()%>')
+	        template.listItemTempalte = _.template('<%=initHtml()%>')
+	        template.emptyViewTemplate = _.template('还没有评论信息！')
+	      })
+	      JWidgets.module('report',function(report,JWidgets,Backbone,Marionette,$,_){
+	        //List
+	        report.loadView = Marionette.ItemView.extend({
+	          className:'loading-view',
+	          template:report.template.loadViewTemplate
+	        })
+
+	        report.listCollection = Backbone.Collection.extend({
+	          url:'/spms/as/comments/',
+	          initialize:function(){
+	            this.datas = {};
+	          },
+	          parse:function(data){
+	            if(data['errcode']){
+	              return data
+	            }else{
+	              _.extend(this.datas,data["data"]['page']);
+	              var list = data["data"]["list"];
+	              return list;
+	            }
+	          },
+	          setDefault:function(options){
+	          _.extend(this.datas,options);
+	          },
+	          resetId:function(id){
+	            this.url = this.url +id
+	          },
+	          fetchData:function(datas,type,callback){
+	            var self = this;
+	            var data = {};
+	            data['app_type'] = this.datas["app_type"];
+	            data['app_id'] = this.datas['app_id'];
+	            if(datas['max_id']){
+	              data['max_id'] = datas['max_id'];
+	            }else{
+	              data["pageno"] = this.datas['pageno'];
+	              data["pagesize"] = this.datas['pagesize'];
+	              _.extend(data,datas);
+	            }
+	            function setHeader(xhr){
+	              xhr.setRequestHeader('HTTP_IV_USER', 'luhongbing');
+	            }
+	            // beforeSend:setHeader
+	            this.fetch({headers:{HTTP_IV_USER:"luhongbing"},data:data,reset:(type=="reset"?true:false),remove:(type=="reset"?true:false),update:(type=="reset"?false:true),success:function(collection,resp){
+	              if(resp['errcode']){
+	                alert(resp['errmemo'])
+	              }else{
+	                self.trigger('fetch:success');
+	                if(callback) callback(collection,resp);
+	              }
+	            }});
+	          }
+	        })
+
+	        report.EmptyView = Marionette.ItemView.extend({
+	          className:'comment-list-none',
+	          template:report.template.emptyViewTemplate
+	        })
+	        report.listItemView = Marionette.ItemView.extend({
+	          className:'comment-list-item',
+	          template:report.template.listItemTempalte,
+	          templateHelpers:function(){
+	            console.log(this.model.toJSON());
+	            return {
+	              initHtml:function(){
+	                return '<div class="comment-list-item-c">\
+	                          <div class="comment-list-item-avatar">\
+	                            <img src="'+OSN_HOSTS+this.user['avatar']['avatar_l']+'"/>\
+	                          </div>\
+	                          <div class="comment-list-item-info">\
+	                            '+this.init_info()+'\
+	                            '+this.init_contentC()+'\
+	                            '+this.init_date()+'\
+	                          </div>\
+	                          <div class="comment-list-item-sep"></div>\
+	                        </div>'
+	              },
+	              init_info:function(){
+	                if(this.name){
+	                  return '<div class="comment-list-item-name">'+this.name+'</div>'
+	                }else{
+	                  return ''
+	                }
+	              },
+	              init_contentC:function(){
+	                return '<div class="comment-list-item-content">'+'<a href="'+'/cmri/profile?id='+this.user["id"]+'=as">'+this.user['name']+'</a> '+this._init_content()+'</div>'
+	              },
+	              _init_content:function(){
+	                var html = this.content.replace(/(@([\u4e00-\u9fa5A-Za-z0-9_-]*))/ig,'<a href="javascript:;" target="_blank">$1</a>');
+	                _.each(this.contain_info,function(item){
+	                  if(html.indexOf(item['name']) > -1){
+	                    if(item['type']!='osns_n_topic'){
+	                      html = html.replace(item['name'],'<a href="javascript:;">'+item["name"]+'</a>')
+	                    }else{
+	                      html = html.replace(/(#([^#\s]*?)#)/ig,'<a href="'+'/cmri/topic?topic='+item["name"]+'" target="_blank">$1</a>');
+	                    }
+	                  }
+	                })
+	                return html
+	              },
+	              init_date:function(){
+	                // created_at
+	                return '<div class="comment-list-item-date">'+moment(this.created_at*1000).format('MM月DD日 hh:mm')+'</div>'
+	              }
+	            }
+	          }
+	        })
+	        report.listsView = Marionette.CompositeView.extend({
+	          className:'comment-list-w',
+	          template:report.template.listsTemplate,
+	          childView:report.listItemView,
+	          childViewContainer:'.comment-list-c',
+	          emptyView:report.EmptyView,
+	          events:{
+	            'click .comment-list-more':'more'
+	          },
+	          ui:{
+	            'moreBtn':'.comment-list-more'
+	          },
+	          templateHelpers:function(){
+	            var self = this;
+	            return {
+	              initMoreBtn:function(){
+	                var pageData = self.collection.datas;
+	                return '<button class="comment-list-more '+(pageData['pagesize'] * (pageData['pageno']+1)<pageData['num']?'':'hide')+'" type="button">加载更多</button>'
+	              }
+	            }
+	          },
+	          more:function(){
+	            var self = this;
+	            var pageData = this.collection.datas;
+	            this.ui.moreBtn.attr({disabled:'disabled'}).html('加载中…')
+	            this.collection.fetchData({pageno:parseInt(pageData['pageno'])+1},'update',function(){
+	              self.resetMoreBtn();
+	            })
+	          },
+	          resetMoreBtn:function(){
+	            var pageData = this.collection.datas;
+	            this.ui.moreBtn.removeAttr('disabled').html('加载更多')
+	            if(pageData['pagesize'] * (pageData['pageno']+1)<pageData['num']){
+	              this.ui.moreBtn.removeClass('hide');
+	            }else{
+	              this.ui.moreBtn.addClass('hide')
+	            }
+	          }
+	        })
+
+	        report.listController = Marionette.Controller.extend({
+	          initialize:function(options){
+	            _.extend(this,options);
+	            this.start();
+	          },
+	          start:function(){
+	            var self = this;
+	            this.collection = new report.listCollection()
+	            this.collection.resetId(this.app_id)
+	            this.loadView = new report.loadView();
+	            this.region.show(this.loadView);
+	            this.listsView = new report.listsView({
+	              collection:this.collection
+	            })
+	            this.collection.setDefault({app_id:this.app_id,pagesize:20,pageno:0,num:0,app_type:this.app_type || 'spms_project'});
+	            this.collection.fetchData({pageno:0,pagesize:200},'reset',function(collection,resp){
+	              self.region.show(self.listsView)
+	            })
+	            JWidgets.vent.on('addReport',function(model){
+	              self.collection.add(model,{at:0})
+	            })
+	          }
+	        });
+	      })
+	      JWidgets.module("report",function(report,JWidgets,Backbone,Marionette,$,_){
+	        //post
+	        report.fetchCollection = Backbone.Collection.extend({
+	          url:'/cmri/suggestion/share',
+	          parse:function(data){
+	            return data['data']['list']
+	          }
+	        })
+	        report.textarea = Backbone.View.extend({
+	          tagName:'textarea',
+	          className:'comment-textarea form-control',
+	          events:{
+	            'keyup':'onKeyup'
+	          },
+	          initialize:function(options){
+	            _.extend(this,options)
+	            this._init_who();
+	            this._initAutoHeight();
+	          },
+	          _init_who:function(){
+	            var emojisData = ["smile", "iphone", "girl", "smiley", "heart", "kiss", "copyright", "coffee","a", "ab", "airplane", "alien", "ambulance", "angel", "anger", "angry",]
+	            var emojis = $.map(emojisData, function(value, i) {return {key: value, name:value}});
+	            var self = this;
+	            var at_config = {
+	              at: "@",
+	              callbacks: {
+	                remote_filter: function(query, callback) {
+	                  self.collection.off('reset').on('reset',function(){
+	                    callback(this.toJSON());
+	                  });
+	                  self.collection.fetch({data:{s:query},reset:true});
+	                }
+	              },
+	              limit:8,
+	              start_with_space: false,
+	              startWithSpace:false
+	            };
+	            var emoji_config = {
+	              at: ":",
+	              data: emojis,
+	              tpl: "<li class='at' data-value='${atwho-at}${name}'><img src='http://assets.github.com/images/icons/emoji/${name}.png'  height='20' width='20' /></li>",
+	              insert_tpl: "<span id='${id}'>${atwho-data-value}</span>",
+	              limit:emojis.length
+	            }
+	            this._input_at = this.$el.atwho(at_config).atwho(emoji_config);
+	            var self = this;
+	            this._input_at.on('change',function(){
+	              // console.info(self.collection,self)
+	              // console.info(self); //匹配到了东西，就显示到这里面了
+	              // console.info(self._input_at.toArray())
+	              self.trigger('keyup',self.$el.val())
+	            });
+	          },
+	          _initAutoHeight: function(){
+	            this.$el.autosize();
+	          },
+	          onKeyup:function(){
+	            this.trigger('keyup',this.$el.val())
+	          }
+	        })
+	        report.input = Backbone.View.extend({
+	          tagName:'input',
+	            className:'comment-input',
+	            events:{
+	              'keyup':'onKeyup'
+	            },
+	            initialize:function(options){
+	              _.extend(this,options);
+	              this.$el.addClass(this.key);
+	              this.$el.attr(this.attr)
+	            },
+	            onKeyup:function(){
+	              this.trigger('keyup',this.$el.val())
+	            }
+	        })
+	        report.postLayout = Marionette.LayoutView.extend({
+	          className:'comment-post-w',
+	          template:report.template.postLayoutTemplate,
+	          regions:{
+	            postC:'.comment-post-c'
+	          }
+	        });
+	        report.postDefaultView = Marionette.ItemView.extend({
+	          className:'post-default-view ',
+	          template:report.template.postDefaultTemplate,
+	          events:{
+	            'click':function(){
+	              this.trigger("click");
+	            }
+	          }
+	        })
+	      report.formLayout = Marionette.LayoutView.extend({
+	        className:'comment-post-form',
+	        template:report.template.formLayout,
+	        events:{
+	          'click .comment-post-form-btn.save':function(evt){
+	            $(evt.currentTarget).attr({disabled:"disabled"}).html('评论中…')
+	            this.trigger('save')
+	          },
+	          'click .comment-post-form-btn.cancel':function(){
+	            this.trigger('cancel')
+	          }
+	        },
+	        ui:{
+	          'saveBtn':'.comment-post-form-btn.save'
+	        },
+	        initialize:function(options){
+	          _.extend(this,options);
+	          Marionette.LayoutView.prototype.initialize.call(this,options);
+	        },
+	        onShow:function(){
+	          var self = this;
+	          this.addRegions({container:this.$el.find('.comment-post-form-c')});
+	          this.textarea = new report.textarea({
+	            collection:this.collection
+	          })
+	          var btn = this.$el.find('.comment-post-form-btn.save')
+	          var re = /\w+((-w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]{2,}/ ;
+	          this.model.bind('change',function(){
+	            var data = this.toJSON();
+	            if(data['content']&&data['content'].length!=0){
+	              btn.removeAttr('disabled')
+	            }else{
+	              btn.attr({disabled:'disabled'})
+	            }
+	          })
+
+	          this.textarea.on('keyup',function(data){
+	            self.model.set({content:data})
+	          })
+
+	          this.container.show(this.textarea);
+	          setTimeout(function(){
+	            self.textarea.$el.focus();
+	          })
+	        }
+	      })
+	      report.postModel = Backbone.Model.extend({
+	        // defaults:{
+	        //   user:selfinfo
+	        // },
+	        url:'/spms/as/comments'
+	      })
+	      report.postController = Marionette.Controller.extend({
+	        initialize:function(options){
+	          _.extend(this,options);
+	          this.start();
+	        },
+	        start:function(){
+	          var self = this;
+	          this.model = new report.postModel({app_type:this.app_type,app_id:this.app_id});
+	          this.collection = new report.fetchCollection();
+	          this.layout = new report.postLayout();
+	          this.region.show(this.layout);
+	          this.resetDefault();
+	        },
+	        _init_form:function(){
+	          var self = this;
+	          this.form_layout = new report.formLayout({
+	            collection:this.collection,
+	            model:this.model
+	          });
+	          this.form_layout.off('save cancel').on('save',function(){
+	            self.model.save({},{success:function(model,resp){
+	              JWidgets.vent.trigger('addReport',resp["data"]["item"]);
+
+	              self.resetDefault();
+	            }});
+	          }).on('cancel',function(){
+	            self.resetDefault();
+	          })
+	          this.layout.postC.show(this.form_layout);
+	        },
+	        resetDefault:function(){
+	          var self = this;
+	          self.model.unset('content',{silent:true});
+	          this.defaultView = new report.postDefaultView();
+	          this.defaultView.on('click',function(){
+	            self._init_form();
+	          })
+	          this.layout.postC.show(this.defaultView);
+	        }
+	      });
+	    })
+	    JWidgets.module('report',function(report,JWidgets,Backbone,Marionette,$,_){
+	      report.Layout = Marionette.LayoutView.extend({
+	        className:'comment-w',
+	        template:report['template']["layoutTemplate"],
+	        onShow:function(){
+	          this.addRegions({
+	            postC:this.$el.find('.comment-post'),
+	            listC:this.$el.find('.comment-list')
+	          })
+	        }
+	      })
+
+	      report.Controller = Marionette.Controller.extend({
+	        initialize:function(data){
+	          _.extend(this,data);
+	          this.start();
+	        },
+	        start:function(){
+	          var self = this;
+	          var postC,listC;
+	          // if(JWidgets.comment){
+	          //   this.layout = new report.Layout();
+	          //   JWidgets.comment.show(this.layout);
+	          //   postC = this.layout.postC;
+	          //   listC = this.layout.listC;
+	          // }else{
+	          //   postC = JWidgets.sendC;
+	          //   listC = JWidgets.listC
+	          // }
+	          // this.post = new report.postController({
+	          //   region:postC,
+	          //   app_type:this.app_type,
+	          //   app_id:this.app_id
+	          // })
+	          // this.list = new report.listController({
+	          //   region:listC,
+	          //   app_type:this.app_type,
+	          //   app_id:this.app_id
+	          // })
+
+	          this.layoutView = new report.Layout({})
+	          this.layoutView.on('show',function(){
+	            self.post = new report.postController({
+	              region:self.layoutView.postC,
+	              app_type:'file',
+	              app_id:self.app_id
+	            })
+	            self.list = new report.listController({
+	              region:self.layoutView.listC,
+	              app_type:'file',
+	              app_id:self.app_id
+	            })
+	          })
+	          this.region.show(this.layoutView)
+	        },
+	        onDestroy:function(){
+	          this.layoutView.remove();
+	          this.post.destroy();
+	          this.list.destroy();
+	        }
+	      })
+	      report.addInitializer(function(data){
+	        report.controller = new report.Controller(data);
+	      })
+	      report.addFinalizer(function(){
+	        report.controller.destroy();
+	        delete report.controller;
+	      })
+	    })
+
+	    JWidgets.module('docView',function(docView,JWidgets,Backbone,Marionette,$,_){})
+	    JWidgets.module('docView.Templates',function(Templates,JWidgets,Backbone,Marionette,$,_){
+	    	Templates.layout = _.template('<div class="doc-view-w">\
+	    									<div class="doc-view-c">\
+	    										<div class="doc-view-l">\
+	    											<div class="doc-view-opear"></div>\
+	    											<div class="doc-view-itemView">\
+	    											</div>\
+	    											<div class="doc-view-moreView"></div>\
+	    										</div>\
+	    										<div class="doc-view-r">\
+	    											<div class="doc-view-info"></div>\
+	    										</div>\
+	    									</div>\
+	    									<div class="doc-view-load"></div>\
+	    									<div class="doc-view-close">\
+	    										<i class="fa fa-close"></i>\
+	    									</div>\
+	    								</div>');
+	    	Templates.loadingView = _.template('<div class="doc-loading">\
+	                          <div class="doc-loading-val">正在加载文件…</div>\
+	    											<div class="spinner">\
+	    										  		<div class="spinner-container container1">\
+	    												    <div class="circle1"></div>\
+	    												    <div class="circle2"></div>\
+	    												    <div class="circle3"></div>\
+	    												    <div class="circle4"></div>\
+	    												  </div>\
+	    												  <div class="spinner-container container2">\
+	    												    <div class="circle1"></div>\
+	    												    <div class="circle2"></div>\
+	    												    <div class="circle3"></div>\
+	    												    <div class="circle4"></div>\
+	    												  </div>\
+	    												  <div class="spinner-container container3">\
+	    												    <div class="circle1"></div>\
+	    												    <div class="circle2"></div>\
+	    												    <div class="circle3"></div>\
+	    												    <div class="circle4"></div>\
+	    												  </div>\
+	    											</div>\
+	    										</div>')
+	                        // <div class="doc-view-opear-item share">\
+	                          // <i class="fa fa-share"></i>\
+	                        // </div>\
+	    	Templates.opearTemplate = _.template('	<div class="doc-view-opear-img"><%= ImgHtml() %></div>\
+	    											<div class="doc-view-opear-same">\
+	    												<a href="<%= link %>" target="_blank" class="downFile"><div class="doc-view-opear-item down">\
+	    													<i class="fa fa-download"></i>\
+	    												</div></a>\
+	                            \
+	    											</div>\
+	    											<div class="doc-view-opear-doc"><%= DocHtml()%></div>\
+	    										')
+	    	Templates.moreItems = _.template('<%= opearBtn() %>\
+	    											<div class="doc-view-moreView-bg hide"></div>\
+	    											<div class="doc-view-moreView-c">\
+	    											<div class="doc-view-moreView-main" style="height:0;">\
+	    												<div class="doc-view-moreView-title">\
+	    													<div class="doc-view-moreView-title-val">所有文件</div>\
+	    													<div class="doc-view-moreView-title-close">\
+	    														<i class="fa fa-close"></i>\
+	    													</div>\
+	    												</div>\
+	    												<div class="doc-view-moreView-content"></div>\
+	    											</div>\
+	    											<div class="doc-view-moreView-info">\
+	    												<%= showMoreHtml() %>\
+	    												<div class="doc-view-moreView-info-val">\
+	    													<span class="doc-view-moreView-nowName"><%= fileFrom() %></span>\
+	    													<span>第<i class="doc-view-moreView-nowNum"><%= nowNum() %></i>个，共<i class="doc-view-moreView-allNum"><%= allNum() %></i>个</span>\
+	    												</div>\
+	    											</div>\
+	    										</div>');
+	    	Templates.itemView = _.template('<%= contentHtml() %>')
+
+	    	/*
+	    	<div class="doc-view-detail-item"><label>说明：</label><span>2</span></div>
+	    	 */
+	    	Templates.infoView = _.template('<div class="doc-view-info-c">\
+	    																			<h3 class="doc-view-name ellipsis"><%= show_name %></h3>\
+	    																			<div class="doc-view-user">\
+	    																				<div class="doc-view-user-avatar">\
+	    																					<img src="<%= user["avatar"]["avatar_s"]%>"/>\
+	    																				</div>\
+	    																				<div class="doc-view-user-info">\
+	    																					<div class="doc-view-user-title ellipsis"><%= user["name"]%></div>\
+	    																					<div class="doc-view-user-date"><%= fileType() %><span><%=changeData()%></span></div>\
+	    																				</div>\
+	    																			</div>\
+	    																			<div class="doc-view-info-main">\
+	    																				<div class="doc-view-detail down">\
+	    																					<div class="doc-view-detai-title">\
+	    																						<span class="circle"><i class="fa fa-info-circle"></i></span>\
+	    																						<span class="val">文件详细信息</span>\
+	    																						<span class="showInfoTypeBtn down"><i class="fa fa-chevron-down"></i></span>\
+	    																						<span class="showInfoTypeBtn up"><i class="fa fa-chevron-up"></i></span>\
+	    																					</div>\
+	    																					<div class="doc-view-detail-w">\
+	    																						<div class="doc-view-detail-c">\
+	    																							<%= detailHtml()%>\
+	    																						</div>\
+	    																					</div>\
+	    																				</div>\
+	    																				<div class="doc-view-comment"></div>\
+	    																			</div>\
+	    																	</div>')
+
+	    	Templates.showItemView = _.template('<div class="doc-view-item-c"><%= contentHtml() %></div>\
+	    																			<div class="doc-view-zoom-w hide">\
+	    																				<div class="doc-view-zoom-c">\
+	    																					<%= zoomImg() %>\
+	    																					<div class="doc-view-zoom"></div>\
+	    																				</div>\
+	    																			</div>')
+	    })
+	    JWidgets.module('docView.DataHeap',function(DataHeap,JWidgets,Backbone,Marionette,$,_){
+	    	this.publicModel = Backbone.Model.extend({});
+	    	this.collection = Backbone.Collection.extend({
+	    		url:'/spms/files/',
+	    		initialize:function(){
+	    			this.datas = {}
+	    		},
+	    		parse:function(datas){
+	    			var self = this;
+	    			_.extend(this.datas,datas["data"]);
+	    			this.publicModel.set(_.filter(datas["data"]['files'],function(item,index){
+	    				if(item["id"] == self.datas["id"]){
+	    					self.datas['nowNum'] = index;
+	    					item.active = true
+	    					return item
+	    				}
+	    			})[0]);
+	    			return datas["data"]['files'];
+	    		}
+	    	});
+	    })
+	    JWidgets.module('docView.init',function(init,JWidgets,Backbone,Marionette,$,_){
+	    	this.layoutTemplate = Marionette.LayoutView.extend({
+	    		template:JWidgets.docView.Templates.layout,
+	    		regions:{
+	    			opearRegion:'.doc-view-opear',
+	    			itemViewRegion:'.doc-view-itemView',
+	    			moreViewRegion:'.doc-view-moreView',
+	    			infoViewRegion:'.doc-view-info',
+	    			loadingRegion:'.doc-view-load'
+	    		},
+	    		triggers:{
+	    			'click .doc-view-close':'closeDocView'
+	    		}
+	    	})
+	    	this.loadViewFunc = Marionette.ItemView.extend({
+	    		template:JWidgets.docView.Templates.loadingView
+	    	})
+	    	this.ItemView = Marionette.ItemView.extend({
+	    		className: 'doc-view-item',
+	    		template:JWidgets.docView.Templates.itemView,
+	    		templateHelpers:function(){
+	    			return {
+	    				contentHtml:function(){
+	    					return '<img src="'+OSN_HOSTS+this.append["thumbnails"]["link"]+'" class="doc-view-item-img" title="'+this.show_name+'"/>'
+	    				}
+	    			}
+	    		},
+	        modelEvents:{
+	          "change":'render'
+	        },
+	        triggers:{
+	          'click':'addActive'
+	        },
+	        ui:{
+	        	img:'img'
+	        },
+	    		render:function(){
+	    			Marionette.ItemView.prototype.render.call(this);
+	    			this.model.get('active')?this.$el.addClass('active'):this.$el.removeClass('active');
+	    			return this;
+	    		},
+	    		onRender:function(){
+	    			var img = this.ui.img;
+	    			var imgW = this.model.get("append")["thumbnails"]["width"];
+	    			var imgH = this.model.get("append")["thumbnails"]["height"];
+	    			var nowH = 0,nowW = 0;
+	    			if(imgW>imgH){
+	    				nowH = 100;
+	    				nowW = imgW * (100/imgH);
+	    				img.css({width:nowW+'px',height:nowH+"px",left:'-'+(nowW-100)/2+'px'});
+	    			}else{
+	    				nowW = 100;
+	    				nowH = imgH*(100/imgW);
+	    				img.css({width:nowW+"px",height:nowH+'px',top:'-'+(nowH-100)/2+'px'});
+	    			}
+	    		}
+	    	})
+	    	this.showItemViewFunc = Marionette.LayoutView.extend({
+	    		className:'doc-view-item-w',
+	    		template:JWidgets.docView.Templates.showItemView,
+	    		events:{
+	    			'mousedown .doc-view-zoom':'moveZoom'
+	    		},
+	    		modelEvents:{
+	    			'change':'render'
+	    		},
+	    		initialize:function(options){
+	    			var self = this;
+	    			_.extend(this,options);
+	    			var time;
+	    			$(window).on('resize',function(){
+	    				clearTimeout(time);
+	    				time = setTimeout(function(){
+	    					self.render();
+	    				},200)
+	    			})
+	    		},
+	    		templateHelpers:function(){
+	    			var self = this;
+	    			return {
+	    				contentHtml:function(){
+	    					if(this.file_type == 'osns_n_image'){
+	    						return '<img src="'+OSN_HOSTS+this.append["original"]["link"]+'" class="doc-view-item-img" />'
+	    					}else{
+	    						// console.log(this);
+	                if(this.ext_name == 'txt' || this.ext_name == "zip" || this.ext_name == 'rar'){
+	                  return '<div class="doc-ico">\
+	                            <i class="fa fa-file-'+fileICONs[this.ext_name]+'-o"></i>\
+	                          </div>'
+	                }else{
+	                  if(typeof(this.html) == 'object'){
+	                    return (_.map(this.html['page'],function(item){return item['html']}).join(''))
+	                  }else{
+	                    return '<iframe src="'+this.html+'"></iframe>'
+	                  }
+	                }
+
+	    						// return ''
+	    					}
+	    				},
+	    				zoomImg:function(){
+	    					if(this.file_type == 'osns_n_image'){
+	    						return '<img src="'+OSN_HOSTS+this.append["original"]["link"]+'" class="zoom-img" />'
+	    					}
+	    				}
+	    			}
+	    		},
+	    		ui:{
+	    			img:'.doc-view-item-img',
+	    			canvas:'canvas',
+	          iframe:'iframe',
+	          container:'.doc-view-item-c',
+	          zoomW:'.doc-view-zoom-w',
+	          zoomC:'.doc-view-zoom-c',
+	          zoom:'.doc-view-zoom'
+	    		},
+	    		onRender:function(){
+	    			this.resetSize();
+	    			this.zoomW = this.ui.zoomW;
+	    			this.zoomC = this.ui.zoomC;
+	    			this.dragZoom = this.ui.zoom;
+	    		},
+	        fullscreen:function(){
+	        	var clientW = document.documentElement.clientWidth || document.body.clientWidth;
+	        	var clientH = document.documentElement.clientHeight || document.body.clientHeight;
+	          if(this.model.get("file_type") =='jw_n_doc' || this.model.get("file_type") == 'onsn_app_doc'){
+	            this.ui.container.removeClass("other");
+	            this.ui.iframe.addClass('docFull');
+	            this.ui.container.css({height:clientH+52+'px'});
+	          }else{
+	          	this.scaleHot = 0;
+	          	this.ui.container.css({transform:'rotate(0deg)'});
+	            this.ui.container.addClass("other");
+	            this.ui.container.css({width:clientW+'px',height:clientH+'px',top:0});
+	          }
+	          this.fullscreenStatus = true
+	          if(this.zoomType == true) this.zoom()
+	        },
+	        exitFull:function(width,height){
+	          if(this.model.get("file_type") =='jw_n_doc' || this.model.get("file_type") == 'onsn_app_doc'){
+	          	this.ui.container.removeClass('other');
+	            this.ui.iframe.removeClass('docFull');
+	            this.ui.container.css({height:height+52+'px'});
+	          }else{
+	            this.ui.container.addClass("other");
+	            this.ui.container.css({width:width+'px',height:height+'px',top:0});
+	          }
+	          this.fullscreenStatus = false
+	          if(this.zoomType == true) this.zoom();
+	        },
+	        turn:function(type){
+	        	if(this.zoomType == true) this.zoom()
+	        	if(type == 'r'){
+	        		this.scaleHot+=90
+	        	}else{
+	        		this.scaleHot-=90
+	        	}
+	        	if(this.scaleHot == 360 || this.scaleHot == -360){
+	        		this.scaleHot = 0
+	        	}
+	        	var img = this.ui.img;
+	        	var imgW = img.width();
+	        	var imgH = img.height();
+	        	var regionH = this.region.$el.height();
+	        	var regionW = this.region.$el.width();
+	        	if(this.scaleHot == 0 || this.scaleHot == 180 || this.scaleHot == -180){
+	        		var str = ''
+	        		if(imgW>imgH){
+	        			this.ui.container.css({width:regionW+'px',height:regionH+'px',top:0});
+	        		}else{
+
+	        		}
+	        	}else{
+	        		if(imgW>imgH){
+	        			var height = 0,top=0
+	        			if(imgW>regionH){
+	        				height = regionH * (regionH / imgW);
+	        				top = (regionH-height)/2
+	        			}else{
+	        				height = regionH / (imgW /regionH);
+	        				top = (regionH-height)/2
+	        			}
+	        			this.ui.container.css({height:height+'px',top:top+'px'});
+	        		}else{
+	        			this.ui.container.css({height:regionH+'px',top:0});
+	        		}
+	        	}
+	        	this.ui.container.css({transform:'rotate('+this.scaleHot+'deg)'});
+	        },
+	        resetSize:function(){
+	        	this.scaleHot = 0;
+	          this.scaleType = 1;
+	          this.ui.container.removeClass('zoom');
+	    	    this.zoomType = false;
+	    	    this.ui.zoomW.addClass('hide');
+	        	this.ui.container.css({transform:'rotate(0deg)'});
+	        	if(this.model.get("file_type") == 'osns_n_doc' || this.model.get("file_type") == 'jw_n_doc'){
+	          	this.ui.container.removeClass('other');
+	    				// this.ui.container.css({top:"-52px",left:"0",right:0,bottom:0,width:"100%",height:this.region.$el.height()+52+'px'});
+	            this.ui.container.css({top:"0",left:"0",right:0,bottom:0,width:"100%",height:this.region.$el.height()+'px'});
+	    			}else{
+	    				this.ui.container.addClass('other');
+	    				this.ui.container.css({width:this.region.$el.width()+'px',height:this.region.$el.height()+'px',top:0});
+	    			}
+
+	          if(typeof(this.model.get("html"))=='object'){
+	            this.ui.container.css({textAlign:'center',overflowY:'auto'})
+	          }
+
+	        },
+	        zoom:function(){
+	        	var zoomW = this.ui.zoomW
+	        	this.ui.container.css({transform:'rotate(0deg)'});
+	    		  this.scaleHot = 0;
+	        	if(this.zoomType == true){
+	        		this.ui.container.removeClass('zoom');
+	    	    	this.zoomType = false;
+	    	    	zoomW.addClass('hide');
+	    	    	this.render();
+	        	}else{
+	        		var zoomC = this.ui.zoomC;
+	        		var dragZoom = this.ui.zoom;
+	    	    	var regionW = this.region.$el.width();
+	    	    	var regionH = this.region.$el.height();
+	    	    	var imgW = this.model.get("append")['original']['width'];
+	    	    	var imgH = this.model.get("append")['original']['height'];
+	    	    	var width = 0,height=0,top=0,bottom=0,right=0,left=0;
+	    	    	if(imgW > regionW || imgH > regionH){
+	    	    		this.zoomType = true;
+	    					this.ui.container.addClass('zoom');
+	    					this.ui.img.addClass('zoom');
+	    	    		zoomW.removeClass('hide');
+	    	    		this.ui.img.css({width:imgW+'px',height:imgH+'px'});
+	    	    		if(imgW < regionW){
+	    	    			this.ui.img.css({left:(regionW-imgW)/2+"px"});
+	    	    		}
+	    	    		if(imgH < regionH){
+	    	    			this.ui.img.css({top:(regionH-imgH)/2+"px"});
+	    	    		}
+	    	    		if(imgW > imgH){
+	    	    			var scale = zoomW.width() / imgW;
+	    						width = "100%";
+	    						height = imgH * scale;
+	    						top = (zoomW.height() - parseInt(height)) / 2;
+	    						zoomC.css({width:width,height:height+'px',top:top+'px'});
+	    						if(regionW < imgW){
+	    							width = zoomW.width() * (regionW / imgW)+'px';
+	    						}
+	    						dragZoom.css({width:width,height:height * (regionH / imgH) +'px'});
+	    	    		}else{
+	    	    			var scale = zoomW.height() / imgH;
+	    						width = imgW * scale;
+	    						left = (zoomW.width() - width) / 2;
+	    						zoomC.css({width:width+'px',height:'100%',left:left+'px'});
+	    						if(regionW < imgW){
+	    							width = width * (regionW / imgW)+'px';
+	    						}
+	    						dragZoom.css({width:width,height:zoomC.height() * (regionH / imgH) +'px'});
+	    	    		}
+	    	    	}else{
+	    	    		new Juggler.Notify({message:'此图片不够放大！',delay:0,timer:0});
+	    	    	}
+	        	}
+	        },
+	        moveZoom:function(evt){
+	        	var self = this;
+	        	var regionW = this.region.$el.width();
+	    	    var regionH = this.region.$el.height();
+	    	    var imgW = this.model.get("append")['original']['width'];
+	    	    var imgH = this.model.get("append")['original']['height'];
+	        	var oldX = evt.clientX - this.dragZoom.position().left,
+	        			oldY = evt.clientY - this.dragZoom.position().top;
+	    			if(evt.button !=0 ) return
+	        	document.onmousemove = function(evt){
+	        		var nowX = evt.clientX,nowY = evt.clientY;
+	        		var top = nowY - oldY,left = nowX - oldX;
+	        		if(left<=0) left = 0;
+	        		else if(left >= self.zoomC.width()-self.dragZoom.outerWidth()) left = self.zoomC.width()-self.dragZoom.outerWidth();
+	        		if(top <=0) top = 0;
+	        		else if(top >= self.zoomC.height()-self.dragZoom.outerHeight()) top = self.zoomC.height()-self.dragZoom.outerHeight();
+	        		self.dragZoom.css({left:left +'px',top:top +'px'});
+	        		if(regionW > imgW){
+	        			if(regionH < imgH){
+	        				self.ui.img.css({top:'-' + imgH * (top / self.zoomC.height())+'px'});
+	        			}
+	        		}else{
+	        			self.ui.img.css({left:'-'+imgW * (left / self.zoomC.width())+'px'})
+	        			if(regionH < imgH){
+	        				self.ui.img.css({top:'-' + imgH * (top / self.zoomC.height())+'px'});
+	        			}
+	        		}
+	        	}
+	        	document.onmouseup = function(){
+	        		document.onmousemove = null;
+	        		document.onmouseup = null;
+	    	    }
+	    	    return false;
+	        },
+	    	  onShow:function(){
+	          this.showSuccess = true;
+
+	        }
+	      })
+	    	this.MoreViews = Marionette.CompositeView.extend({
+	    		className:'doc-view-moreView-w',
+	    		template: JWidgets.docView.Templates.moreItems,
+	    		events:{
+	    			'click .doc-view-moreView-pre':'pre',
+	    			'click .doc-view-moreView-next':'nex',
+	    			'click .doc-view-moreView-btnc':'showLists',
+	    			'click .doc-view-moreView-title-close':'closeLists'
+	    		},
+	    		childViewContainer:'.doc-view-moreView-content',
+	        childView: this.ItemView,
+	        childEvents:{
+	          'addActive':function(view,argument){
+	            var model = argument.model;
+	            _.each(this.collection.models,function(item){
+	              item.set({active:false})
+	            })
+	            model.set({active:true});
+	            this.model.clear({silent:true}).set(model.toJSON());
+	            var num = this.collection.indexOf(model);
+	            this.closeLists();
+	            this.ui.nowNumC.html(num+1);
+	            this.collection.datas['nowNum'] = num;
+	          }
+	        },
+	        templateHelpers:function(){
+	          var self = this;
+	          return {
+	            opearBtn:function(){
+	              if(self.collection.length>1){
+	                return '<div class="doc-view-moreView-opear">\
+	                        <div class="doc-view-moreView-pre">\
+	                          <i class="fa fa-chevron-left"></i>\
+	                        </div>\
+	                        <div class="doc-view-moreView-next">\
+	                          <i class="fa fa-chevron-right"></i>\
+	                        </div>\
+	                      </div>'
+	              }
+	            },
+	            showMoreHtml:function(){
+	              if(self.collection.length>1){
+	                return '<div class="doc-view-moreView-btnc">\
+	                          <div class="doc-view-moreView-btn">查看全部</div>\
+	                          <i class="fa fa-caret-up"></i>\
+	                        </div>'
+	              }
+	            },
+	            fileFrom:function(){
+	              var data = self.collection.datas['info'];
+	              var name = ''
+	              if(data['name'] &&data['name'] !="") name = data['name'];
+	              else name = '来自'+apptypeName[data['app_type']];
+	              return '<span>'+name+'</span><span>'+data["user"]["name"]+'创建</span>'
+	            },
+	            nowNum:function(){
+	              var model = self.collection.get(self.collection.publicModel.get("id"));
+	              return (self.collection.indexOf(model)+1);
+	            },
+	            allNum:function(){
+	              return self.collection.length;
+	            }
+	          }
+	        },
+	        ui:{
+	          nowNumC:'.doc-view-moreView-nowNum',
+	          listMain:'.doc-view-moreView-main',
+	          bg:'.doc-view-moreView-bg'
+	        },
+	        modelEvents:{
+	          'change':function(){
+	            this.ui.nowNumC.html(this.collection.datas['nowNum']+1);
+	          }
+	        },
+	        pre:function(){
+	          var num = this.collection.datas['nowNum'];
+	          if(num == 0) num = this.collection.length-1
+	          else num--;
+	          this.collection.datas['nowNum'] = num;
+	          var model = this.collection.at(num);
+	          _.each(this.collection.models,function(item){
+	            item.set({active:false});
+	          })
+	          model.set({active:true});
+	          this.collection.publicModel.clear({silent:true}).set(model.toJSON());
+	        },
+	        nex:function(){
+	          var num = this.collection.datas['nowNum'];
+	          if(num == this.collection.length-1) num = 0
+	          else num++;
+	          this.collection.datas['nowNum'] = num;
+	          var model = this.collection.at(num);
+	          _.each(this.collection.models,function(item){
+	              item.set({active:false});
+	            })
+	          model.set({active:true});
+	          this.collection.publicModel.clear({silent:true}).set(model.toJSON());
+	        },
+	        showLists:function(){
+	        	if(this.ui.bg.hasClass("hide")){
+	        		this.ui.bg.removeClass('hide')
+	    	      this.ui.listMain.animate({height:'250px'},200);
+	        	}else{
+	    	    	this.closeLists();
+	          }
+	        },
+	        closeLists:function(){
+	        	this.ui.bg.addClass('hide')
+	          this.ui.listMain.animate({height:'0px'},200);
+	        },
+	        onShow:function(){
+	        	var self = this;
+	        	$(document).on('keyup',function(evt){
+	    				if(evt.keyCode == 37){
+	    					self.pre()
+	    				}else if(evt.keyCode == 39){
+	    					self.nex()
+	    				}
+	    			})
+	        }
+	    	})
+	    	this.opearView = Marionette.LayoutView.extend({
+	    		className:'doc-view-opear-c',
+	    		template:JWidgets.docView.Templates.opearTemplate,
+	    		templateHelpers:function(){
+	    			var self = this;
+	    			return{
+	    				ImgHtml:function(){
+	    					if(this.file_type =='osns_n_image'){
+	                var str = '<div class="doc-view-opear-item turn-r"><i class="fa fa-repeat"></i></div>\
+	    											<div class="doc-view-opear-item turn-l"><i class="fa fa-rotate-left"></i></div>'
+	                if(!$.support.Ie8_9) str+='<div class="doc-view-opear-item funscrenn"><i class="fa fa-arrows-alt"></i></div>';
+	                var data = self.model.get("append")['original'];
+	                if(data['height'] < 6000 && data["width"]< 5000) str+='<div class="doc-view-opear-item zoom"><i class="fa fa-square-o"></i></div>'
+	                str+='<div class="doc-view-opear-item newopen"><a href="'+data["link"]+'" target="_blank"><i class="fa fa-plus-square-o"></i></a></div>'
+	    					  return str
+	    					}else{
+	    						return ''
+	    					}
+	    				},
+	    				DocHtml:function(){
+	    					if(this.file_type !='osns_n_image'){
+	                var str = '';
+	                if(!$.support.Ie8_9) str+='<div class="doc-view-opear-item funscrenn"><i class="fa fa-arrows-alt"></i></div>'
+	                // str+='<div class="doc-view-opear-item newopen"><a href="'+self.model.get("link")+'" target="_blank"><i class="fa fa-plus-square-o"></i></a></div>';//新开窗口未处理
+	    					  return str
+	    					}else{
+	    						return ''
+	    					}
+	    				}
+	    			}
+	    		},
+	    		modelEvents:{
+	    			'change':'render'
+	    		},
+	    		triggers:{
+	          'click .turn-r':'turnR',
+	          'click .turn-l':'turnL',
+	          'click .funscrenn':'funScrenn',
+	          'click .share':'share',
+	          'click .zoom':'zoom',
+	          'click .downFile':"downFile"
+	        },
+	        ui:{
+	          imgEl:'.doc-view-item-c'
+	        }
+	    	})
+	    	this.infoView = Marionette.LayoutView.extend({
+	    		className:'doc-view-info-w',
+	    		template:JWidgets.docView.Templates.infoView,
+	    		templateHelpers:function(){
+	    			var self = this;
+	    			return {
+	    				changeData:function(){
+	    					return (moment(this.created_at*1000).format('YYYY年MM月DD日'))
+	    				},
+	    				fileType:function(){
+	    					return '上传自'+apptypeName[this.app_type]
+	    				},
+	    				detailHtml:function(){
+	    					if(this.file_type !='osns_n_image'){
+	    						return '<div class="doc-view-detail-item"><label>查看次数：</label><span>'+(this.viewed_num || 0)+'</span></div>\
+	    										<div class="doc-view-detail-item"><label>评论数：</label><span class="commentsNum">'+(this.comments_num || 0)+'</span></div>\
+	    										<div class="doc-view-detail-item"><label>下载数：</label><span class="downNum">'+(this.download_num || 0)+'</span></div>\
+	    										<div class="doc-view-detail-item"><label>文件名：</label><span class="ellipsis">'+(this.show_name)+'</span></div>\
+	    										<div class="doc-view-detail-item"><label>文件大小：</label><span>'+(this.file_size / 1000)+'KB</span></div>'
+	    					}else{
+	    						return '<div class="doc-view-detail-item"><label>查看次数：</label><span>'+(this.viewed_num || 0)+'</span></div>\
+	    										<div class="doc-view-detail-item"><label>评论数：</label><span class="commentsNum">'+(this.comments_num || 0)+'</span></div>\
+	    										<div class="doc-view-detail-item"><label>下载数：</label><span class="downNum">'+(this.download_num || 0)+'</span></div>\
+	    										<div class="doc-view-detail-item"><label>尺寸：</label><span>'+(this.width)+'*'+(this.height)+'</span></div>\
+	    										<div class="doc-view-detail-item"><label>文件名：</label><span class="ellipsis">'+(this.show_name)+'</span></div>\
+	    										<div class="doc-view-detail-item"><label>文件大小：</label><span>'+(this.file_size / 1000)+'KB</span></div>'
+	    					}
+	    				}
+	    			}
+	    		},
+	    		ui:{
+	    			'detailC':'.doc-view-detail-w',
+	          'commentsNum':'.commentsNum',
+	          'downNum':'.downNum'
+	    		},
+	    		events:{
+	    			'click .doc-view-detail.down':'showDetailDown',
+	    			'click .doc-view-detail.up':'showDetailUp'
+	    		},
+	    		modelEvents:{
+	    			'change:id':'render',
+	          'change:comments_num':'changeCommentsNum',
+	          'change:download_num':'changeDownNum'
+	    		},
+	    		showDetailDown:function(evt){
+	    			$(evt.currentTarget).removeClass('down').addClass('up')
+	    			this.ui.detailC.stop().slideDown(200);
+	    		},
+	    		showDetailUp:function(evt){
+	    			$(evt.currentTarget).removeClass('up').addClass('down')
+	    			this.ui.detailC.stop().slideUp(200);
+	    		},
+	    		onRender:function(){
+	    			var self = this;
+	    			this.addRegions({commentsC:this.$el.find('.doc-view-comment')});
+	          console.log(self.model.get('id'),'这个是info的id')
+
+
+	          var data = {
+	            region: self.commentsC,
+	            app_id: self.model.get('id'),
+	            app_type: 'spms_file',
+	            state:{pagesize:10000000}
+	          }
+
+	          self.commentsView = new JWidgets.report.Controller(data);
+
+	          // self.commentsView = JWidgets.Comments.main.newComments({
+	          //   region: self.commentsC,
+	          //   app_id: self.model.get('id'),
+	          //   app_type: 'spms_file',
+	          //   state:{pagesize:10000000}
+	          // });
+	          // self.commentsView.off('comments:'+self.model.get("id")).on('comments:'+self.model.get("id"),function(num){
+	          //   self.model.set({comments_num:num})
+	          // })
+	          // self.commentsView.off('comments:new:success comments:remove:success').on('comments:new:success',function(data){
+	          //   self.model.set({comments_num: (self.model.get('comments_num')+1) })
+	          // }).on('commentsnumber',function(data){
+	          //   self.model.set({comments_num: (self.model.get('comments_num')-1) })
+	          // });
+	    		},
+	        changeCommentsNum:function(){
+	          this.ui.commentsNum.html(this.model.get("comments_num"))
+	        },
+	        addDownNum:function(){
+	          var num = parseInt(this.model.get("download_num"))
+	          this.model.set({download_num:num})
+	        },
+	        changeDownNum:function(){
+	          this.ui.downNum.html(this.model.get("download_num"))
+	        }
+	    	})
+	    	this.Controller = Marionette.Controller.extend({
+	    		initialize:function(options){
+	    			_.extend(this,options);
+	    			this.start();
+	    		},
+	    		start:function(){
+	    			var self = this;
+	    			var container = $('<div class="doc-view"></div>');
+	    			var body = $('body')
+	    			body.css({overflow:'hidden'});
+	    			body.append(container);
+	    			this.layout = new JWidgets.docView.init.layoutTemplate({
+	    				el:container
+	    			});
+	    			this.layout.render();//初始化整个结构
+	    			this.loadView = new JWidgets.docView.init.loadViewFunc();//初始化loading
+	    			this.layout.loadingRegion.show(this.loadView);//展示loading
+	    			this.layout.once('closeDocView',function(){
+	    				$(window).off("resize");
+	    				body.css({overflow:'inherit'});
+	    				self.layout.destroy();
+	    			})
+	    			$(document).on('keyup',function(evt){
+	    				if(evt.keyCode == 27){
+	              if(self.showItemView){
+	      					if(self.showItemView.fullscreenStatus == true){
+	      						self.showItemView.exitFull()
+	      					}else{
+	      						self.layout.trigger('closeDocView');
+	      					}
+	              }
+	    				}
+	    			})
+	    			this.publicModel = new JWidgets.docView.DataHeap.publicModel();//初始化公共Model
+	    			this.collection = new JWidgets.docView.DataHeap.collection();//初始化collection
+	    			this.collection.publicModel = this.publicModel;
+	    			this.collection.datas['id'] = this.id;
+	    			var model = Backbone.Model.extend({
+	    				url:"/spms/file/getfolder/"
+	    			});
+	    			var newModel = new model()
+	    			newModel.save({},{url:'/spms/file/getfolder/?id='+this.id,success:function(model,resp){
+	    				var datas = resp["data"]['files'];
+	    				self.publicModel.set(_.filter(datas,function(item,index){
+	    					if(item["id"] == self.id){
+	    						self.collection.datas['nowNum'] = index;
+	    						item.active = true
+	    						return item
+	    					}
+	    				})[0]);
+	    				_.extend(self.collection.datas,resp["data"])
+	    				self.collection.add(datas);
+	    				self.showItemView = new JWidgets.docView.init.showItemViewFunc({model:self.publicModel,region:self.layout.itemViewRegion});
+	            self.opearView = new JWidgets.docView.init.opearView({model:self.publicModel});
+	            var scaleHot = 0;
+	            self.opearView.on('turnR',function(){
+	              self.showItemView.turn('r');
+	            }).on('turnL',function(){
+	            	self.showItemView.turn('l');
+	            }).on('funScrenn',function(){
+	              if (screenfull.enabled) {
+	              	var width = self.layout.itemViewRegion.$el.width(),height = self.layout.itemViewRegion.$el.height();
+	                screenfull.request(self.showItemView.$el.parent()[0]);
+	                $(document).on(screenfull.raw.fullscreenchange, function () {
+	                  if(screenfull.isFullscreen){
+	                    setTimeout(function(){
+	                      self.showItemView.fullscreen();
+	                    },450)
+	                  }else{
+	                    setTimeout(function(){
+	                      self.showItemView.exitFull(width,height);
+	                      $(document).unbind(screenfull.raw.fullscreenchange);
+	                    },450)
+	                  }
+	                });
+	              }
+	            }).on('share',function(){
+	            	var datas = {
+	            		title:'分享',
+	    	          tips:'默认信息流中的文字',//默认为空
+	    	          data:{
+	    	          	content:'分享一个文件',
+	    	          	share_info:self.publicModel.toJSON(),
+	    	          	app_type:'osns_app_files'
+	    	          },
+	    	          type:'share'
+	            	}
+	            	Spms.vent.trigger('forward',datas);
+	            }).on('zoom',function(){
+	            	self.showItemView.zoom();
+	            }).on('downFile',function(){
+	              window.open(this.model.get("link"))
+	            });
+	            self.infoView = new JWidgets.docView.init.infoView({model:self.publicModel});
+	            self.layout.infoViewRegion.show(self.infoView);
+	    				self.layout.loadingRegion.reset();
+	    				self.layout.opearRegion.show(self.opearView);
+	    				self.layout.moreViewRegion.show(new JWidgets.docView.init.MoreViews({
+	              collection: self.collection,
+	              model:self.publicModel
+	            }));
+	    				self.layout.itemViewRegion.show(self.showItemView)
+	    			}})
+	    		}
+	    	})
+
+	    	InitDocView = function(options){
+	    		return new JWidgets.docView.init.Controller(options)
+	    	}
+
+	    })
+
+	    // JWidgets.on('start',function(data){
+	    //
+	    // })
+	    // JWidgets.addInitializer(function(data){
+	  	// 	var region = $('<div class="public-docView"></div>');
+	  	// 	$('body').append(comment);
+	    //
+	  	// 	JWidgets.addRegions({
+	  	// 		docViewRegion:'.public-docView'
+	  	// 	})
+	    // })
+	    //
+	    // JWidgets.start(data);
+
+	    window.JWidgets = JWidgets
+	    var url = window.location.href.split('?')[1].split("&");
+	    var datas = {};
+	    _.each(url,function(item){
+	    	var data = item.split('=');
+	    	datas[data[0]] = data[1]
+	    });
+	    var id = datas['id'];
+	    console.log(id)
+	    // new JWidgets.docView.init.Controller({id:options['id']})
+	  }
+	  init();
+	})
+
+</script>
+</html>
