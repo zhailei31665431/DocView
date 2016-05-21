@@ -1,8 +1,12 @@
 # Marionette DocView Demo
 
-![image](https://github.com/zhailei31665431/DocView/blob/master/gif/1.gif)
+![image](https://github.com/zhailei31665431/DocView/blob/master/gif/1.png)
 
-![image](https://github.com/zhailei31665431/DocView/blob/master/gif/2.gif)
+![image](https://github.com/zhailei31665431/DocView/blob/master/gif/2.png)
+
+![image](https://github.com/zhailei31665431/DocView/blob/master/gif/3.png)
+
+![image](https://github.com/zhailei31665431/DocView/blob/master/gif/4.png)
 
 ---
 
